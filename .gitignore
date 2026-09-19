@@ -1,0 +1,13 @@
+# Build outputs
+[Bb]in/
+[Oo]bj/
+build/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# OS
+Thumbs.db
+.DS_Store

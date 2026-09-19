@@ -1,0 +1,95 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>SimHub.Plugin.Beefweb</AssemblyName>
+    <RootNamespace>SimHub.Plugin.Beefweb</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Platforms>AnyCPU;x64;x86</Platforms>
+    <Company>Claude.ai</Company>
+    <Authors>Claude.ai</Authors>
+    <Product>SimHub Beefweb Media Control Plugin</Product>
+    <Description>SimHub plugin that reads Foobar2000 media info and playback controls through the Beefweb HTTP plugin.</Description>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <!-- Copy the built plugin next to the project for easy manual install/testing. Safe to remove. -->
+    <PostBuildEvent>xcopy /Y /D "$(TargetDir)$(TargetName).dll" "$(SolutionDir)build\" 2>nul
+xcopy /Y /D "$(TargetDir)Newtonsoft.Json.dll" "$(SolutionDir)build\" 2>nul</PostBuildEvent>
+  </PropertyGroup>
+
+  <!--
+    Path to your local SimHub install. Override on the command line or in a
+    Directory.Build.props file with:
+      -p:SimHubInstallDir="C:\Program Files (x86)\SimHub"
+    if SimHub is installed somewhere other than the default below.
+  -->
+  <PropertyGroup>
+    <SimHubInstallDir Condition="'$(SimHubInstallDir)' == ''">C:\Program Files (x86)\SimHub</SimHubInstallDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <!--
+      log4net is referenced directly below, via HintPath into the SimHub
+      install rather than as a PackageReference, because SimHub.Logging's
+      API surface exposes log4net's ILog type, so the compiler needs it
+      even though this plugin never calls log4net itself. Private=false on
+      that reference means we don't ship our own copy: at runtime it binds
+      to the log4net.dll SimHub itself already loads, at whatever version
+      that build of SimHub uses, and no log4net package ends up in this
+      project's dependency tree for vulnerability scanners to flag.
+    -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- SimHub SDK assemblies, referenced from the local SimHub install, not from NuGet. -->
+    <Reference Include="SimHub.Plugins">
+      <HintPath>$(SimHubInstallDir)\SimHub.Plugins.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="SimHub.Logging">
+      <HintPath>$(SimHubInstallDir)\SimHub.Logging.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="MahApps.Metro">
+      <HintPath>$(SimHubInstallDir)\MahApps.Metro.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GameReaderCommon">
+      <HintPath>$(SimHubInstallDir)\GameReaderCommon.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>$(SimHubInstallDir)\log4net.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Legacy .NET Framework assemblies that are not implicitly referenced under the SDK-style project format. -->
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web" />
+    <!-- System.Security.Cryptography.ProtectedData (DPAPI), used to encrypt the persisted password. -->
+    <Reference Include="System.Security" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      foobar2000's own logo, used as this plugin's icon in SimHub's plugin list.
+      Sourced from Wikipedia (https://en.wikipedia.org/wiki/File:Foobar2000_logo.png),
+      tagged {{PD-textlogo}} on Commons: too simple/geometric to meet the threshold
+      of originality for copyright, so it's public domain. That covers copyright only,
+      not any separate trademark in the logo; using it here to identify the program
+      this plugin talks to is the same kind of nominative use every third-party
+      plugin/tool makes when showing the logo of the thing it integrates with.
+    -->
+    <EmbeddedResource Include="Resources\foobar2000_icon.png" />
+  </ItemGroup>
+
+  <!-- Installs the built plugin straight into SimHub for local testing. Close SimHub before building, or this copy fails silently (ContinueOnError). -->
+  <Target Name="CopyToSimHub" AfterTargets="Build">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SimHubInstallDir)" ContinueOnError="true" />
+  </Target>
+
+</Project>
