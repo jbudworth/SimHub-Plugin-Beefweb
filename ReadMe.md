@@ -110,42 +110,14 @@ that match your Beefweb configuration, and click "Test connection".
 This plugin talks to Beefweb's documented REST endpoints (`GET /api/player`,
 `GET /api/playlists`, `GET /api/artwork/{playlistId}/{index}`, and the
 `POST`/`PUT` playback and state endpoints). The JSON field names and shapes
-used in `BeefwebModels.cs` reflect Beefweb's own public API and documentation,
-but this project could not be built and run against a live foobar2000/Beefweb
-instance in the environment that produced it. If a property comes back empty
-or a control does not respond as expected, the most likely cause is a small
-mismatch between a field name here and what your specific Beefweb version
-actually returns. Open `http://<host>:<port>/api/player` in a browser while a
-track is playing, compare the JSON to `PlayerState` in `BeefwebModels.cs`, and
-adjust the `[JsonProperty(...)]` names there if needed; nothing else in the
-plugin needs to change.
-
-## A note on the SimHub plugin SDK
-
-This project could not be compiled against the real `SimHub.Plugins.dll` in
-the environment that produced it, since that DLL only exists inside a SimHub
-install. The plugin lifecycle (`IPlugin`, `IDataPlugin`, `IWPFSettingsV2`) and
-the extension methods it relies on (`AttachDelegate`, `AddAction`, `AddEvent`,
-`TriggerEvent`, `ReadCommonSettings`, `SaveCommonSettings`) follow the
-conventions used by SimHub's own bundled demo plugin
-(`User.PluginSdkDemo`, installed at
-`C:\Program Files (x86)\SimHub\PluginSdk\User.PluginSdkDemo`) and by publicly
-available community plugins. If Visual Studio reports any of these as
-missing or with a different signature on your SimHub version, that demo
-project is the fastest way to check the current exact names.
-
-## Plugin icon
-
-SimHub's plugin list shows an icon next to each plugin's name. This plugin
-uses foobar2000's own logo for that (`Resources/foobar2000_icon.png`,
-embedded in the plugin DLL). That file is sourced from Wikipedia
-(https://en.wikipedia.org/wiki/File:Foobar2000_logo.png), where it's tagged
-`{{PD-textlogo}}`: simple enough geometrically that it doesn't meet the
-threshold of originality for copyright, and is therefore in the public
-domain. That covers copyright only, not any separate trademark in the logo;
-showing it here to identify the program this plugin talks to is the same
-kind of use every third-party plugin or tool makes when displaying the logo
-of whatever it integrates with.
+used in `BeefwebModels.cs` reflect Beefweb's own public API and documentation.
+If a property comes back empty or a control does not respond as expected,
+the most likely cause is a small mismatch between a field name here and what
+your specific Beefweb version actually returns. Open
+`http://<host>:<port>/api/player` in a browser while a track is playing,
+compare the JSON to `PlayerState` in `BeefwebModels.cs`, and adjust the
+`[JsonProperty(...)]` names there if needed; nothing else in the plugin needs
+to change.
 
 ## Notes on this build
 
