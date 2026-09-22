@@ -300,7 +300,7 @@ namespace SimHub.Plugin.Beefweb
                 return;
             }
 
-            var currentIndex = playlists.Playlists.FindIndex(p => p.Id == playlists.CurrentPlaylistId);
+            var currentIndex = playlists.Playlists.FindIndex(p => p.IsCurrent);
             if (currentIndex < 0)
             {
                 currentIndex = 0;
@@ -309,7 +309,11 @@ namespace SimHub.Plugin.Beefweb
             var count = playlists.Playlists.Count;
             var nextIndex = ((currentIndex + direction) % count + count) % count;
 
-            await Client.SetCurrentPlaylistAsync(playlists.Playlists[nextIndex].Id).ConfigureAwait(false);
+            // Beefweb has no "switch to this playlist" endpoint that affects playback on its own;
+            // starting playback at the first item of the target playlist is what actually moves
+            // playback there. player/next and player/previous only step within the currently
+            // played playlist.
+            await Client.PlayItemAsync(playlists.Playlists[nextIndex].Id, 0).ConfigureAwait(false);
         }
 
         // --- Polling loop ---

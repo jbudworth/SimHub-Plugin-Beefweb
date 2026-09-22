@@ -128,11 +128,6 @@ namespace SimHub.Plugin.Beefweb
         public Task SetMuteAsync(bool isMuted) =>
             SetPlayerStateAsync(new { isMuted });
 
-        // --- Playlists ---
-
-        public Task SetCurrentPlaylistAsync(string playlistId) =>
-            PostAsync($"playlists/current?playlistId={Uri.EscapeDataString(playlistId)}", useVerbPut: true);
-
         // --- Low level helpers ---
 
         private Task SetPlayerStateAsync(object body)
@@ -142,13 +137,10 @@ namespace SimHub.Plugin.Beefweb
             return _http.PutAsync("player", content);
         }
 
-        private async Task PostAsync(string relativeUrl, bool useVerbPut = false)
+        private async Task PostAsync(string relativeUrl)
         {
             var content = new StringContent(string.Empty);
-            var response = useVerbPut
-                ? await _http.PutAsync(relativeUrl, content).ConfigureAwait(false)
-                : await _http.PostAsync(relativeUrl, content).ConfigureAwait(false);
-
+            var response = await _http.PostAsync(relativeUrl, content).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
         }
 

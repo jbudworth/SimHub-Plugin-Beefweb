@@ -96,9 +96,6 @@ namespace SimHub.Plugin.Beefweb
     {
         [JsonProperty("playlists")]
         public List<PlaylistInfo> Playlists { get; set; }
-
-        [JsonProperty("currentPlaylistId")]
-        public string CurrentPlaylistId { get; set; }
     }
 
     public class PlaylistInfo
