@@ -11,7 +11,7 @@
     <Authors>Claude.ai</Authors>
     <Product>SimHub Beefweb Media Control Plugin</Product>
     <Description>SimHub plugin that reads Foobar2000 media info and playback controls through the Beefweb HTTP plugin.</Description>
-    <Version>0.9.1</Version>
+    <Version>0.9.2</Version>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <!-- Copy the built plugin next to the project for easy manual install/testing. Safe to remove. -->

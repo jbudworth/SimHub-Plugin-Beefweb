@@ -231,6 +231,13 @@ namespace SimHub.Plugin.Beefweb
             this.AttachDelegate("LastError", () => _snapshot.LastError);
         }
 
+        private double ClampSeekTarget(double positionSeconds)
+        {
+            var duration = _snapshot.Duration;
+            var target = Math.Max(0, positionSeconds);
+            return duration > 0 ? Math.Min(duration, target) : target;
+        }
+
         private static string FormatTime(double seconds)
         {
             if (double.IsNaN(seconds) || double.IsInfinity(seconds) || seconds < 0)
@@ -253,8 +260,8 @@ namespace SimHub.Plugin.Beefweb
             AddControl("NextTrack", () => Client.NextTrackAsync());
             AddControl("PreviousTrack", () => Client.PreviousTrackAsync());
 
-            AddControl("SeekForward", () => Client.SeekAsync(_snapshot.Position + Settings.SeekStepSeconds));
-            AddControl("SeekBackward", () => Client.SeekAsync(_snapshot.Position - Settings.SeekStepSeconds));
+            AddControl("SeekForward", () => Client.SeekAsync(ClampSeekTarget(_snapshot.Position + Settings.SeekStepSeconds)));
+            AddControl("SeekBackward", () => Client.SeekAsync(ClampSeekTarget(_snapshot.Position - Settings.SeekStepSeconds)));
 
             AddControl("VolumeUp", () => Client.SetVolumeAsync(Math.Min(_snapshot.VolumeMax, _snapshot.Volume + Settings.VolumeStepPercent)));
             AddControl("VolumeDown", () => Client.SetVolumeAsync(Math.Max(_snapshot.VolumeMin, _snapshot.Volume - Settings.VolumeStepPercent)));
@@ -307,13 +314,24 @@ namespace SimHub.Plugin.Beefweb
             }
 
             var count = playlists.Playlists.Count;
-            var nextIndex = ((currentIndex + direction) % count + count) % count;
 
-            // Beefweb has no "switch to this playlist" endpoint that affects playback on its own;
-            // starting playback at the first item of the target playlist is what actually moves
-            // playback there. player/next and player/previous only step within the currently
-            // played playlist.
-            await Client.PlayItemAsync(playlists.Playlists[nextIndex].Id, 0).ConfigureAwait(false);
+            // Walk in the requested direction until a non-empty playlist is found, skipping over
+            // empty ones (playing index 0 of an empty playlist would just fail). Bail out once
+            // we've checked every playlist without finding one, rather than looping forever.
+            for (var step = 1; step <= count; step++)
+            {
+                var candidateIndex = ((currentIndex + direction * step) % count + count) % count;
+                var candidate = playlists.Playlists[candidateIndex];
+                if (candidate.ItemCount > 0)
+                {
+                    // Beefweb has no "switch to this playlist" endpoint that affects playback on
+                    // its own; starting playback at the first item of the target playlist is what
+                    // actually moves playback there. player/next and player/previous only step
+                    // within the currently played playlist.
+                    await Client.PlayItemAsync(candidate.Id, 0).ConfigureAwait(false);
+                    return;
+                }
+            }
         }
 
         // --- Polling loop ---

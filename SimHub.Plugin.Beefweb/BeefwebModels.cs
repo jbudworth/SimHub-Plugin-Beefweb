@@ -28,9 +28,6 @@ namespace SimHub.Plugin.Beefweb
         [JsonProperty("playbackState")]
         public string PlaybackState { get; set; } // "playing" | "paused" | "stopped"
 
-        [JsonProperty("playbackMode")]
-        public int? PlaybackMode { get; set; }
-
         [JsonProperty("volume")]
         public VolumeInfo Volume { get; set; }
 
@@ -55,9 +52,6 @@ namespace SimHub.Plugin.Beefweb
 
     public class VolumeInfo
     {
-        [JsonProperty("type")]
-        public string Type { get; set; } // "linear" | "db"
-
         [JsonProperty("min")]
         public double Min { get; set; }
 
@@ -75,9 +69,6 @@ namespace SimHub.Plugin.Beefweb
     {
         [JsonProperty("playlistId")]
         public string PlaylistId { get; set; }
-
-        [JsonProperty("playlistIndex")]
-        public int PlaylistIndex { get; set; }
 
         [JsonProperty("index")]
         public int Index { get; set; }
@@ -111,24 +102,6 @@ namespace SimHub.Plugin.Beefweb
 
         [JsonProperty("itemCount")]
         public int ItemCount { get; set; }
-    }
-
-    public class PlaylistItemsResponse
-    {
-        [JsonProperty("offset")]
-        public int Offset { get; set; }
-
-        [JsonProperty("totalCount")]
-        public int TotalCount { get; set; }
-
-        [JsonProperty("items")]
-        public List<PlaylistItemRow> Items { get; set; }
-    }
-
-    public class PlaylistItemRow
-    {
-        [JsonProperty("columns")]
-        public List<string> Columns { get; set; }
     }
 
     /// <summary>

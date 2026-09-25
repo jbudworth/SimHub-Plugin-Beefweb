@@ -49,10 +49,16 @@ namespace SimHub.Plugin.Beefweb
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
+            if (!int.TryParse(PortTextBox.Text, out var port) || port < 1 || port > 65535)
+            {
+                StatusText.Text = "Port must be a number between 1 and 65535.";
+                return;
+            }
+
             var settings = _plugin.Settings;
 
             settings.Host = HostTextBox.Text.Trim();
-            settings.Port = int.TryParse(PortTextBox.Text, out var port) ? port : settings.Port;
+            settings.Port = port;
             settings.UseAuthentication = UseAuthCheckbox.IsChecked == true;
             settings.Username = UsernameTextBox.Text.Trim();
             settings.Password = PasswordBox.Password;
