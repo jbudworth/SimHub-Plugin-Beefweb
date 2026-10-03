@@ -5,6 +5,9 @@ A SimHub plugin that reads media info from a Foobar2000 instance running the
 and exposes it to SimHub as properties, plus a full set of playback controls
 exposed both as mappable actions and as events of the same name.
 
+![Settings](imgs/BeefwebControl_Settings.png)
+
+
 ## What you get
 
 **Properties** (readable anywhere in SimHub: dashboards, formulas, etc.):

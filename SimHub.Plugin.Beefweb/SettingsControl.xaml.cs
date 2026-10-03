@@ -17,12 +17,16 @@ namespace SimHub.Plugin.Beefweb
 
             LoadFromSettings();
 
-            StatusText.Text = _plugin.GetNowPlayingSummary();
-
             _statusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _statusTimer.Tick += (s, e) => StatusText.Text = _plugin.GetNowPlayingSummary();
-            _statusTimer.Start();
 
+            // SimHub reuses this control instance when navigating back to the page, so the timer
+            // must restart on every Loaded, not just once in the constructor.
+            Loaded += (s, e) =>
+            {
+                StatusText.Text = _plugin.GetNowPlayingSummary();
+                _statusTimer.Start();
+            };
             Unloaded += (s, e) => _statusTimer.Stop();
         }
 
