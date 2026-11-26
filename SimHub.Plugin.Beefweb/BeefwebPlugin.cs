@@ -263,8 +263,17 @@ namespace SimHub.Plugin.Beefweb
             AddControl("SeekForward", () => Client.SeekAsync(ClampSeekTarget(_snapshot.Position + Settings.SeekStepSeconds)));
             AddControl("SeekBackward", () => Client.SeekAsync(ClampSeekTarget(_snapshot.Position - Settings.SeekStepSeconds)));
 
-            AddControl("VolumeUp", () => Client.SetVolumeAsync(Math.Min(_snapshot.VolumeMax, _snapshot.Volume + Settings.VolumeStepPercent)));
-            AddControl("VolumeDown", () => Client.SetVolumeAsync(Math.Max(_snapshot.VolumeMin, _snapshot.Volume - Settings.VolumeStepPercent)));
+            // Step is a percentage of the player's volume range (foobar2000 reports dB, e.g. -100..0).
+            AddControl("VolumeUp", () =>
+            {
+                var step = (_snapshot.VolumeMax - _snapshot.VolumeMin) * Settings.VolumeStepPercent / 100.0;
+                return Client.SetVolumeAsync(Math.Min(_snapshot.VolumeMax, _snapshot.Volume + step));
+            });
+            AddControl("VolumeDown", () =>
+            {
+                var step = (_snapshot.VolumeMax - _snapshot.VolumeMin) * Settings.VolumeStepPercent / 100.0;
+                return Client.SetVolumeAsync(Math.Max(_snapshot.VolumeMin, _snapshot.Volume - step));
+            });
             AddControl("ToggleMute", () => Client.SetMuteAsync(!_snapshot.IsMuted));
 
             AddControl("NextPlaylist", () => ChangePlaylistAsync(1));

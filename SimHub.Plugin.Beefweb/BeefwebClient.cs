@@ -130,11 +130,13 @@ namespace SimHub.Plugin.Beefweb
 
         // --- Low level helpers ---
 
-        private Task SetPlayerStateAsync(object body)
+        private async Task SetPlayerStateAsync(object body)
         {
+            // Beefweb sets player state with POST /api/player (PUT is not supported).
             var json = JsonConvert.SerializeObject(body);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            return _http.PutAsync("player", content);
+            var response = await _http.PostAsync("player", content).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
         }
 
         private async Task PostAsync(string relativeUrl)
